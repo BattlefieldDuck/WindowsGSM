@@ -110,6 +110,7 @@
                         <mah:ToggleSwitch x:Name="MahAppSwitch_AutoUpdateAlert" Header="Auto Update Alert" Margin="0,20,0,20" Toggled="Switch_AutoUpdateAlert_Click"/>
                         <mah:ToggleSwitch x:Name="MahAppSwitch_RestartCrontabAlert" Header="Restart Crontab Alert" Margin="0,20,0,20" Toggled="Switch_RestartCrontabAlert_Click"/>
                         <mah:ToggleSwitch x:Name="MahAppSwitch_CrashAlert" Header="Crash Alert" Margin="20,20,0,20" Toggled="Switch_CrashAlert_Click"/>
+                        <mah:ToggleSwitch x:Name="MahAppSwitch_ShowPublicIP" Header="Show Public IP" Margin="20,20,0,20" Toggled="Switch_ShowPublicIP_Click"/>
                     </StackPanel>
                 </ScrollViewer>
             </mah:Flyout>
@@ -166,6 +167,9 @@
                                     <Label Content="Server Maxplayer"></Label>
                                     <mah:NumericUpDown x:Name="numericUpDown_EC_ServerMaxplayer" Minimum="1" Maximum="100000" FontFamily="Consolas" Interval="1" Height="5" Width="120"/>
                                 </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                
                             </StackPanel>
                             <StackPanel Margin="0,0,0,10">
                                 <Label Content="Server Start Map"></Label>
@@ -381,6 +385,7 @@
                             <DataGrid x:Name="listBox_DiscordBotAdminList" SelectionMode="Single" BorderThickness="1" DockPanel.Dock="Top">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Admin ID" IsReadOnly="True" Binding="{Binding Path=AdminId}" Width="150" MinWidth="150" MaxWidth="150" FontFamily="Consolas"/>
+                                    <DataGridTextColumn Header="Admin Name" IsReadOnly="True" Binding="{Binding Path=AdminName}" Width="150" MinWidth="150" MaxWidth="150" FontFamily="Consolas"/>
                                     <DataGridTextColumn Header="Server IDs" IsReadOnly="True" Binding="{Binding Path=ServerIds}" Width="1*" FontFamily="Consolas"/>
                                 </DataGrid.Columns>
                             </DataGrid>

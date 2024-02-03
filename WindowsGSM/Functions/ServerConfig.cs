@@ -34,6 +34,7 @@ namespace WindowsGSM.Functions
             public const string AutoUpdateAlert = "autoupdatealert";
             public const string RestartCrontabAlert = "restartcrontabalert";
             public const string CrashAlert = "crashalert";
+            public const string ShowPublicIP = "showpublicip";
             public const string CPUPriority = "cpupriority";
             public const string CPUAffinity = "cpuaffinity";
             public const string AutoScroll = "autoscroll";
@@ -65,6 +66,7 @@ namespace WindowsGSM.Functions
         public bool AutoUpdateAlert;
         public bool RestartCrontabAlert;
         public bool CrashAlert;
+        public bool ShowPublicIP;
         public string CPUPriority;
         public string CPUAffinity;
         public bool AutoScroll;
@@ -136,6 +138,7 @@ namespace WindowsGSM.Functions
                             case SettingName.AutoUpdateAlert: AutoUpdateAlert = keyvalue[1] == "1"; break;
                             case SettingName.RestartCrontabAlert: RestartCrontabAlert = keyvalue[1] == "1"; break;
                             case SettingName.CrashAlert: CrashAlert = keyvalue[1] == "1"; break;
+                            case SettingName.ShowPublicIP: ShowPublicIP = keyvalue[1] == "1"; break;
                             case SettingName.CPUPriority: CPUPriority = keyvalue[1]; break;
                             case SettingName.CPUAffinity: CPUAffinity = keyvalue[1]; break;
                             case SettingName.AutoScroll: AutoScroll = keyvalue[1] == "1"; break;
@@ -173,6 +176,7 @@ namespace WindowsGSM.Functions
             AutoUpdateAlert = true;
             RestartCrontabAlert = true;
             CrashAlert = true;
+            ShowPublicIP = true;
             CPUPriority = "2";
             CPUAffinity = string.Concat(System.Linq.Enumerable.Repeat("1", Environment.ProcessorCount));
             AutoScroll = true;
@@ -223,6 +227,7 @@ namespace WindowsGSM.Functions
                     textwriter.WriteLine($"{SettingName.AutoUpdateAlert}=\"1\"");
                     textwriter.WriteLine($"{SettingName.RestartCrontabAlert}=\"1\"");
                     textwriter.WriteLine($"{SettingName.CrashAlert}=\"1\"");
+                    textwriter.WriteLine($"{SettingName.ShowPublicIP}=\"1\"");
                 }
 
                 return true;

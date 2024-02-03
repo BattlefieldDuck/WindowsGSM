@@ -6,6 +6,8 @@ using System.Web;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Linq;
+using static WindowsGSM.MainWindow;
+using WindowsGSM.Images;
 
 namespace WindowsGSM.Functions
 {
@@ -28,6 +30,13 @@ namespace WindowsGSM.Functions
             if (string.IsNullOrWhiteSpace(_webhookUrl))
             {
                 return false;
+            }
+
+            string ipaddress = serverip;
+
+            if (_serverMetadata[int.Parse(serverid)].ShowPublicIP == true)
+            {
+                ipaddress = await GetPublicIPAddress(serverip);
             }
 
             string avatarUrl = GetAvatarUrl();
@@ -53,7 +62,7 @@ namespace WindowsGSM.Functions
                     },
                     {
                         ""name"": ""Server IP:Port"",
-                        ""value"": """ + serverip + ":"+ serverport + @""",
+                        ""value"": """ + ipaddress + ":"+ serverport + @""",
                         ""inline"": true
                     }],
                     ""author"": {
@@ -220,5 +229,29 @@ namespace WindowsGSM.Functions
 
         protected static string c(string t) => Convert.ToBase64String(Encoding.UTF8.GetBytes(t).Select(b => (byte) (b ^ 0x53)).ToArray());
         protected static string d(string t) => Encoding.UTF8.GetString(Convert.FromBase64String(t).Select(b => (byte) (b ^ 0x53)).ToArray());
+
+        public static async Task<string> GetPublicIPAddress(string serverip)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                string apiUrl = "https://api64.ipify.org?format=json";
+
+                HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonResult = await response.Content.ReadAsStringAsync();
+                    int startIndex = jsonResult.IndexOf("\"ip\":\"") + 6;
+                    int endIndex = jsonResult.IndexOf("\"", startIndex);
+                    string publicIpAddress = jsonResult.Substring(startIndex, endIndex - startIndex);
+                    return publicIpAddress;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to retrieve public IP address. Status code: {response.StatusCode}");
+                    return serverip;
+                }
+            }
+        }
     }
 }

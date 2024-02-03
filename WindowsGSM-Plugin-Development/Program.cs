@@ -39,7 +39,7 @@ namespace WindowsGSM_Plugin_Development
             Console.ResetColor();
 
             var pluginsList = new List<string>();
-            foreach (var pluginFile in Directory.GetFiles(localPlugins, "*.cs", SearchOption.TopDirectoryOnly).ToList())
+            foreach (var pluginFile in Directory.GetFiles(localPlugins, "*.cs", SearchOption.AllDirectories).ToList())
             {
                 pluginsList.Add(pluginFile);
                 Console.Write("Found => ");

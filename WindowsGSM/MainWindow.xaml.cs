@@ -28,6 +28,9 @@ using Label = System.Windows.Controls.Label;
 using Orientation = System.Windows.Controls.Orientation;
 using System.Windows.Documents;
 using MessageBox = System.Windows.MessageBox;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 
 namespace WindowsGSM
 {
@@ -81,6 +84,7 @@ namespace WindowsGSM
             public bool AutoUpdateAlert;
             public bool RestartCrontabAlert;
             public bool CrashAlert;
+            public bool ShowPublicIP;
 
             // Restart Crontab Settings
             public bool RestartCrontab;
@@ -363,6 +367,8 @@ namespace WindowsGSM
             StartServerTableRefresh();
 
             StartDashBoardRefresh();
+
+            DiscordBot.Configs.FixOldDiscordAdminList();
         }
 
         private Process GetConsoleProcess(int processId)
@@ -779,6 +785,7 @@ namespace WindowsGSM
             _serverMetadata[i].AutoUpdateAlert = serverConfig.AutoUpdateAlert;
             _serverMetadata[i].RestartCrontabAlert = serverConfig.RestartCrontabAlert;
             _serverMetadata[i].CrashAlert = serverConfig.CrashAlert;
+            _serverMetadata[i].ShowPublicIP = serverConfig.ShowPublicIP;
 
             // Restart Crontab Settings
             _serverMetadata[i].RestartCrontab = serverConfig.RestartCrontab;
@@ -1088,6 +1095,7 @@ namespace WindowsGSM
                 MahAppSwitch_AutoUpdateAlert.IsOn = GetServerMetadata(row.ID).AutoUpdateAlert;
                 MahAppSwitch_RestartCrontabAlert.IsOn = GetServerMetadata(row.ID).RestartCrontabAlert;
                 MahAppSwitch_CrashAlert.IsOn = GetServerMetadata(row.ID).CrashAlert;
+                MahAppSwitch_ShowPublicIP.IsOn = GetServerMetadata(row.ID).ShowPublicIP;
             }
         }
 
@@ -3637,6 +3645,14 @@ namespace WindowsGSM
             _serverMetadata[int.Parse(server.ID)].CrashAlert = MahAppSwitch_CrashAlert.IsOn;
             ServerConfig.SetSetting(server.ID, ServerConfig.SettingName.CrashAlert, GetServerMetadata(server.ID).CrashAlert ? "1" : "0");
         }
+        private void Switch_ShowPublicIP_Click(object sender, RoutedEventArgs e)
+        {
+            var server = (ServerTable)ServerGrid.SelectedItem;
+            if (server == null) { return; }
+            _serverMetadata[int.Parse(server.ID)].ShowPublicIP = MahAppSwitch_ShowPublicIP.IsOn;
+            ServerConfig.SetSetting(server.ID, ServerConfig.SettingName.ShowPublicIP, GetServerMetadata(server.ID).ShowPublicIP ? "1" : "0");
+
+        }
         #endregion
 
         private async void Window_Activated(object sender, EventArgs e)
@@ -3666,6 +3682,8 @@ namespace WindowsGSM
                 button_DiscordBotInvite.IsEnabled = switch_DiscordBot.IsOn = await g_DiscordBot.Start();
                 DiscordBotLog("Discord Bot " + (switch_DiscordBot.IsOn ? "started." : "fail to start. Reason: Bot Token is invalid."));
                 switch_DiscordBot.IsEnabled = true;
+                DiscordBot.Configs.FixOldDiscordAdminList();
+                Refresh_DiscordBotAdminList();
             }
             else
             {
@@ -3694,7 +3712,7 @@ namespace WindowsGSM
             }
         }
 
-        private void Button_DiscordBotTokenEdit_Click(object sender, RoutedEventArgs e)
+        private async void Button_DiscordBotTokenEdit_Click(object sender, RoutedEventArgs e)
         {
             if (button_DiscordBotTokenEdit.Content.ToString() == "Edit")
             {
@@ -3710,6 +3728,8 @@ namespace WindowsGSM
                 button_DiscordBotTokenEdit.Content = "Edit";
                 textBox_DiscordBotToken.IsEnabled = false;
                 DiscordBot.Configs.SetBotToken(textBox_DiscordBotToken.Text);
+                DiscordBot.Configs.FixOldDiscordAdminList();
+                Refresh_DiscordBotAdminList();
             }
         }
 
@@ -3749,8 +3769,9 @@ namespace WindowsGSM
             string newAdminID = await this.ShowInputAsync("Add Admin ID", "Please enter the discord user ID.", settings);
             if (newAdminID == null) { return; } //If pressed cancel
 
+            string discordName = await DiscordBot.Configs.GetDiscordUserName(newAdminID);
             var adminList = DiscordBot.Configs.GetBotAdminList();
-            adminList.Add((newAdminID, "0"));
+            adminList.Add((newAdminID, discordName, "0"));
             DiscordBot.Configs.SetBotAdminList(adminList);
             Refresh_DiscordBotAdminList(listBox_DiscordBotAdminList.SelectedIndex);
         }
@@ -3776,7 +3797,7 @@ namespace WindowsGSM
                 if (adminList[i].Item1 == adminListItem.AdminId)
                 {
                     adminList.RemoveAt(i);
-                    adminList.Insert(i, (adminListItem.AdminId, newServerIds.Trim()));
+                    adminList.Insert(i, (adminListItem.AdminId, adminListItem.AdminName, newServerIds.Trim()));
                     break;
                 }
             }
@@ -3784,7 +3805,7 @@ namespace WindowsGSM
             Refresh_DiscordBotAdminList(listBox_DiscordBotAdminList.SelectedIndex);
         }
 
-        private void Button_DiscordBotRemoveID_Click(object sender, RoutedEventArgs e)
+        private async void Button_DiscordBotRemoveID_Click(object sender, RoutedEventArgs e)
         {
             if (listBox_DiscordBotAdminList.SelectedIndex >= 0)
             {
@@ -3803,12 +3824,13 @@ namespace WindowsGSM
             }
         }
 
-        public void Refresh_DiscordBotAdminList(int selectIndex = 0)
+        public async void Refresh_DiscordBotAdminList(int selectIndex = 0)
         {
             listBox_DiscordBotAdminList.Items.Clear();
-            foreach (var (adminID, serverIDs) in DiscordBot.Configs.GetBotAdminList())
+            var adminList = DiscordBot.Configs.GetBotAdminList();
+            foreach (var (adminID, adminName, serverIDs) in adminList)
             {
-                listBox_DiscordBotAdminList.Items.Add(new DiscordBot.AdminListItem { AdminId = adminID, ServerIds = serverIDs });
+                listBox_DiscordBotAdminList.Items.Add(new DiscordBot.AdminListItem { AdminId = adminID, AdminName = adminName, ServerIds = serverIDs });
             }
             listBox_DiscordBotAdminList.SelectedIndex = listBox_DiscordBotAdminList.Items.Count >= 0 ? selectIndex : -1;
         }
@@ -4035,5 +4057,7 @@ namespace WindowsGSM
             _serverMetadata[int.Parse(server.ID)].AutoScroll = Button_AutoScroll.Content.ToString().Contains("✔️");
             ServerConfig.SetSetting(server.ID, ServerConfig.SettingName.AutoScroll, GetServerMetadata(server.ID).AutoScroll ? "1" : "0");
         }
+
+        
     }
 }
