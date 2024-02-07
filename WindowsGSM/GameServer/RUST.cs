@@ -5,14 +5,14 @@ using System.IO;
 namespace WindowsGSM.GameServer
 {
     /// <summary>
-    /// 
+    ///
     /// Notes:
     /// Both RedirectStandardInput or RedirectStandardOutput cannot use on WindowsGSM.
     /// RedirectStandardOutput is possible but it will break the input, if used both, the server can run successfully but the input become useless again.
-    /// 
+    ///
     /// The solution for this is don't use neither RedirectStandardInput nor RedirectStandardOutput.
     /// Just use the traditional method to handle the server.
-    /// 
+    ///
     /// </summary>
     class RUST
     {
@@ -28,7 +28,7 @@ namespace WindowsGSM.GameServer
         public dynamic QueryMethod = new Query.A2S();
 
         public string Port = "28015";
-        public string QueryPort = "28015";
+        public string QueryPort = "28016";
         public string Defaultmap = "Procedural Map";
         public string Maxplayers = "50";
         public string Additional = string.Empty;
@@ -68,6 +68,7 @@ namespace WindowsGSM.GameServer
             param += string.IsNullOrWhiteSpace(_serverData.ServerName) ? string.Empty : $" +server.hostname \"{_serverData.ServerName}\"";
             param += string.IsNullOrWhiteSpace(_serverData.ServerIP) ? string.Empty : $" +server.ip {_serverData.ServerIP}";
             param += string.IsNullOrWhiteSpace(_serverData.ServerPort) ? string.Empty : $" +server.port {_serverData.ServerPort}";
+            param += string.IsNullOrWhiteSpace(_serverData.ServerQueryPort) ? string.Empty : $" +server.queryport {_serverData.ServerQueryPort}";
             param += string.IsNullOrWhiteSpace(_serverData.ServerMap) ? string.Empty : $" +server.level \"{_serverData.ServerMap}\"";
             param += string.IsNullOrWhiteSpace(_serverData.ServerMaxPlayer) ? string.Empty : $" +server.maxplayers {_serverData.ServerMaxPlayer}";
 

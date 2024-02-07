@@ -567,7 +567,7 @@ namespace WindowsGSM
             Process.Start(e.Uri.AbsoluteUri);
         }
 
-        private async void ImportPlugin_Click(object sender, RoutedEventArgs e) 
+        private async void ImportPlugin_Click(object sender, RoutedEventArgs e)
         {
             // If a server is installing or import => return
             if (progressbar_InstallProgress.IsIndeterminate || progressbar_ImportProgress.IsIndeterminate)
@@ -904,7 +904,7 @@ namespace WindowsGSM
 
         public int GetActivePlayers()
         {
-            return ServerGrid.Items.Cast<ServerTable>().Where(s => s.Maxplayers != null && s.Maxplayers.Contains('/')).Sum(s => int.TryParse(s.Maxplayers.Split('/')[0], out int count) ? count : 0 );
+            return ServerGrid.Items.Cast<ServerTable>().Where(s => s.Maxplayers != null && s.Maxplayers.Contains('/')).Sum(s => int.TryParse(s.Maxplayers.Split('/')[0], out int count) ? count : 0);
         }
 
         private void Refresh_DashBoard_LiveChart()
@@ -1865,7 +1865,7 @@ namespace WindowsGSM
                 }
             });
 
-            //An error may occur on ShowWindow if not adding this 
+            //An error may occur on ShowWindow if not adding this
             if (p == null || p.HasExited)
             {
                 _serverMetadata[int.Parse(server.ID)].Process = null;
@@ -2551,7 +2551,7 @@ namespace WindowsGSM
                 //Delay 1 second for later compare
                 await Task.Delay(1000);
 
-                //Return if crontab expression is invalid 
+                //Return if crontab expression is invalid
                 if (crontabTime == null) { continue; }
 
                 //If now >= crontab time
@@ -3371,13 +3371,7 @@ namespace WindowsGSM
                 return;
             }
 
-            if (existed == true)
-            {
-                await this.ShowMessageAsync(messageTitle, $"Already Installed (ID: {server.ID})");
-                return;
-            }
-
-            var result = await this.ShowMessageAsync(messageTitle, $"Are you sure to install? (ID: {server.ID})", MessageDialogStyle.AffirmativeAndNegative);
+            var result = await this.ShowMessageAsync(messageTitle, $"Are you sure to install/Update? (ID: {server.ID})", MessageDialogStyle.AffirmativeAndNegative);
             if (result == MessageDialogResult.Affirmative)
             {
                 ProgressDialogController controller = await this.ShowProgressAsync("Installing...", "Please wait...");
@@ -3730,7 +3724,7 @@ namespace WindowsGSM
                 DiscordBot.Configs.SetDashboardChannel(textBox_DiscordBotDashboard.Text);
             }
         }
-       
+
 
         private void NumericUpDown_DiscordRefreshRate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double?> e)
         {
