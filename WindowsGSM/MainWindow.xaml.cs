@@ -21,12 +21,14 @@ using System.Collections;
 using LiveCharts;
 using LiveCharts.Wpf;
 using System.Management;
+using System.Runtime.Remoting.Contexts;
 using System.Windows.Media.Imaging;
 using ControlzEx.Theming;
 using WindowsGSM.Functions;
 using Label = System.Windows.Controls.Label;
 using Orientation = System.Windows.Controls.Orientation;
 using System.Windows.Documents;
+using WindowsGSM.DiscordBot;
 using MessageBox = System.Windows.MessageBox;
 
 namespace WindowsGSM
@@ -567,7 +569,7 @@ namespace WindowsGSM
             Process.Start(e.Uri.AbsoluteUri);
         }
 
-        private async void ImportPlugin_Click(object sender, RoutedEventArgs e) 
+        private async void ImportPlugin_Click(object sender, RoutedEventArgs e)
         {
             // If a server is installing or import => return
             if (progressbar_InstallProgress.IsIndeterminate || progressbar_ImportProgress.IsIndeterminate)
@@ -1865,7 +1867,7 @@ namespace WindowsGSM
                 }
             });
 
-            //An error may occur on ShowWindow if not adding this 
+            //An error may occur on ShowWindow if not adding this
             if (p == null || p.HasExited)
             {
                 _serverMetadata[int.Parse(server.ID)].Process = null;
@@ -2551,7 +2553,7 @@ namespace WindowsGSM
                 //Delay 1 second for later compare
                 await Task.Delay(1000);
 
-                //Return if crontab expression is invalid 
+                //Return if crontab expression is invalid
                 if (crontabTime == null) { continue; }
 
                 //If now >= crontab time
@@ -3829,6 +3831,40 @@ namespace WindowsGSM
             }
 
             return list;
+        }
+
+        public List<(string, string, string)> GetServerList(string userId)
+        {
+            var serverIds = Configs.GetServerIdsByAdminId(userId);
+            var serverList = ServerGrid.Items.Cast<ServerTable>().ToList();
+
+            if (serverIds.Contains("0"))
+            {
+                return serverList
+                    .Select(server => (server.ID, server.Status, server.Name))
+                    .ToList();
+            }
+
+            return serverList
+                .Where(server => serverIds.Contains(server.ID))
+                .Select(server => (server.ID, server.Status, server.Name)).ToList();
+        }
+
+        public List<(string, string, string)> GetServerListByUserId(string userId)
+        {
+            var serverIds = Configs.GetServerIdsByAdminId(userId);
+            var serverList = ServerGrid.Items.Cast<ServerTable>().ToList();
+
+            if (serverIds.Contains("0"))
+            {
+                return serverList
+                    .Select(server => (server.ID, server.Status, server.Name))
+                    .ToList();
+            }
+
+            return serverList
+                .Where(server => serverIds.Contains(server.ID))
+                .Select(server => (server.ID, server.Status, server.Name)).ToList();
         }
 
         public bool IsServerExist(string serverId)
