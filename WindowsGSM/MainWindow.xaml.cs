@@ -27,6 +27,7 @@ using WindowsGSM.Functions;
 using Label = System.Windows.Controls.Label;
 using Orientation = System.Windows.Controls.Orientation;
 using System.Windows.Documents;
+using Microsoft.Extensions.FileSystemGlobbing;
 using MessageBox = System.Windows.MessageBox;
 
 namespace WindowsGSM
@@ -2197,7 +2198,28 @@ namespace WindowsGSM
             {
                 try
                 {
-                    ZipFile.CreateFromDirectory(startPath, zipFile);
+                    ZipHelper.CreateFromDirectory(startPath, zipFile, new CompressionLevel(), (path) =>
+                    {
+                        var excludePathString = backupConfig.ExludePaths;
+                        if (string.IsNullOrWhiteSpace(excludePathString))
+                        {
+                            return true;
+                        }
+                        
+                        var excludePaths = excludePathString.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var excludePath in excludePaths)
+                        {
+                            var matcher = new Matcher();
+                            matcher.AddInclude(excludePath);
+                            var result = matcher.Match(path);
+                            if (result.HasMatches)
+                            {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    });
                 }
                 catch (Exception e)
                 {

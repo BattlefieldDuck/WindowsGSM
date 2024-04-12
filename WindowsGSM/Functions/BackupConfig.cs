@@ -15,11 +15,13 @@ namespace WindowsGSM.Functions
         static class SettingName
         {
             public const string BackupLocation = "backuplocation";
+            public const string ExludePaths = "exludepaths";
             public const string MaximumBackups = "maximumbackups";
         }
 
         private readonly string _serverId;
         public string BackupLocation;
+        public string ExludePaths;
         public int MaximumBackups = DefaultMaximumBackups;
 
         public BackupConfig(string serverId)
@@ -28,7 +30,7 @@ namespace WindowsGSM.Functions
             string configPath = ServerPath.GetServersConfigs(_serverId, "BackupConfig.cfg");
             if (!File.Exists(configPath))
             {
-                File.WriteAllText(configPath, $"{SettingName.BackupLocation}=\"{Path.Combine(MainWindow.WGSM_PATH, "Backups", serverId)}\"{Environment.NewLine}{SettingName.MaximumBackups}=\"{DefaultMaximumBackups}\"");
+                File.WriteAllText(configPath, $"{SettingName.BackupLocation}=\"{Path.Combine(MainWindow.WGSM_PATH, "Backups", serverId)}\"{Environment.NewLine}{SettingName.ExludePaths}=\"\"{Environment.NewLine}{SettingName.BackupLocation}=\"{Path.Combine(MainWindow.WGSM_PATH, "Backups", serverId)}\"{Environment.NewLine}{SettingName.MaximumBackups}=\"{DefaultMaximumBackups}\"");
             }
 
             LoadConfig();
@@ -51,6 +53,7 @@ namespace WindowsGSM.Functions
                     switch (keyvalue[0])
                     {
                         case SettingName.BackupLocation: BackupLocation = keyvalue[1]; break;
+                        case SettingName.ExludePaths: ExludePaths = keyvalue[1]; break;
                         case SettingName.MaximumBackups: MaximumBackups = int.TryParse(keyvalue[1], out int max) ? ((max <= 0) ? 1 : max) : DefaultMaximumBackups; break;
                     }
                 }

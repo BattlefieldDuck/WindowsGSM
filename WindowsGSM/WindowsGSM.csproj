@@ -162,6 +162,9 @@
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.3.1.6\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.Extensions.FileSystemGlobbing, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.FileSystemGlobbing.8.0.0\lib\net462\Microsoft.Extensions.FileSystemGlobbing.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
@@ -376,6 +379,7 @@
     <Compile Include="Functions\ServerConsole.cs" />
     <Compile Include="Functions\SystemMetrics.cs" />
     <Compile Include="Functions\UI.cs" />
+    <Compile Include="Functions\ZipHelper.cs" />
     <Compile Include="GameServer\Addon\AMXModX.cs" />
     <Compile Include="GameServer\Addon\SourceMod.cs" />
     <Compile Include="GameServer\ARKSE.cs" />
