@@ -1852,7 +1852,9 @@ namespace WindowsGSM
                         _serverMetadata[int.Parse(server.ID)].MainWindow = p.MainWindowHandle;
                     }
 
-                    p.WaitForInputIdle();
+                    //Fix for Factorio - The WaitForInputIdle never returns my guess is because Factorio is built
+                    //  without a message loop seems to work fine with this commented out
+                    //p.WaitForInputIdle();
 
                     if (!p.StartInfo.CreateNoWindow)
                     {
